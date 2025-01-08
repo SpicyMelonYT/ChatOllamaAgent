@@ -13,6 +13,23 @@ Interface Overview:
 Interface Console:
 ![Interface Console](media/interface-console.png)
 
+
+## Starting the Interface or the Runner
+
+```python
+from chatollamaagent.interface import Interface
+from chatollamaagent.runner import NetworkRunner
+
+# Create and run the interface
+interface = Interface()
+interface.run()
+
+# Or run a network file
+runner = NetworkRunner(
+    "Path/To/Your/Network.coa")
+runner.run()
+```
+
 ## Custom Nodes and Sockets
 
 ### Creating Custom Sockets
