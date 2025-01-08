@@ -7,6 +7,9 @@ pip install chatollamaagent
 ```
 A visual node-based programming system for creating and managing chat-based workflows. Design your chat flows visually, connect nodes to create logic, and execute the networks with the built-in runner.
 
+![Interface Overview](media/interface-overview.png)
+![Interface Console](media/interface-console.png)
+
 ## Custom Nodes and Sockets
 
 ### Creating Custom Sockets
