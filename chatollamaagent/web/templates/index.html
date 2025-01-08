@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Ollama Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Menu Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid p-0">
+            <a class="navbar-brand ms-3">Chat Ollama Agent</a>
+            <div class="collapse navbar-collapse justify-content-between">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">File</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" id="menu-new"><i class="bi bi-file-earmark"></i> New</a></li>
+                            <li><a class="dropdown-item" id="menu-open"><i class="bi bi-folder2-open"></i> Open</a></li>
+                            <li><a class="dropdown-item" id="menu-save"><i class="bi bi-save"></i> Save</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">View</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" id="menu-reset-view"><i class="bi bi-arrows-fullscreen"></i> Reset View</a></li>
+                            <li><a class="dropdown-item" id="menu-center-selected"><i class="bi bi-bullseye"></i> Center Selected</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div id="status-bar" class="navbar-text alert-info px-3 py-1 rounded">
+                    Connecting to server...
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-resize-handle"></div>
+            <div class="sidebar-section flex-grow-1">
+                <h6 class="sidebar-header"><i class="bi bi-diagram-2"></i> Nodes</h6>
+                <div class="search-container">
+                    <input type="text" id="node-search" class="form-control form-control-sm" placeholder="Search nodes...">
+                </div>
+                <div id="node-palette" class="sidebar-content">
+                    <!-- Node categories will be dynamically populated here -->
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <button class="settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                    <i class="bi bi-gear-fill"></i>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Settings will be dynamically populated here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Tab Navigation -->
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-tab="node-editor-tab">Node Editor</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-tab="console-tab">Console</a>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Node Editor Tab -->
+                <div id="node-editor-tab" class="tab-pane active">
+                    <div class="editor-container">
+                        <svg id="node-editor" class="node-editor">
+                            <defs>
+                                <filter id="node-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="blur"/>
+                                    <feOffset in="blur" dx="0" dy="3" result="offsetBlur"/>
+                                    <feFlood flood-color="rgba(0,0,0,0.5)" result="offsetColor"/>
+                                    <feComposite in="offsetColor" in2="offsetBlur" operator="in" result="offsetBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="offsetBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <g id="connections"></g>
+                            <g id="nodes"></g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Console Tab -->
+                <div id="console-tab" class="tab-pane">
+                    <div class="console-container">
+                        <div class="stats-container">
+                            <!-- Network Overview -->
+                            <div class="stats-section">
+                                <h5 class="stats-header">Network Overview</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="stats-card">
+                                            <div class="card-body">
+                                                <h6>Node Statistics</h6>
+                                                <div class="stat-item">
+                                                    <span>Total Nodes:</span>
+                                                    <span id="stat-total-nodes">0</span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <span>Selected Nodes:</span>
+                                                    <span id="stat-selected-nodes">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="stats-card">
+                                            <div class="card-body">
+                                                <h6>Connection Statistics</h6>
+                                                <div class="stat-item">
+                                                    <span>Flow Connections:</span>
+                                                    <span id="stat-flow-connections">0</span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <span>Data Connections:</span>
+                                                    <span id="stat-data-connections">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Socket Analysis -->
+                            <div class="stats-section">
+                                <h5 class="stats-header">Socket Analysis</h5>
+                                <div class="stats-card">
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="socket-type-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Node Distribution -->
+                            <div class="stats-section">
+                                <h5 class="stats-header">Node Distribution</h5>
+                                <div class="stats-card">
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="category-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Network Health -->
+                            <div class="stats-section">
+                                <h5 class="stats-header">Network Health</h5>
+                                <div class="stats-card">
+                                    <div class="card-body">
+                                        <div id="health-warnings" class="health-list">
+                                            <div class="text-muted">No issues detected</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../static/js/node-registry.js"></script>
+    <script src="../static/js/node-palette.js"></script>
+    <script src="../static/js/websocket.js"></script>
+    <script src="../static/js/node-interface.js"></script>
+    <script src="../static/js/node-editor.js"></script>
+    <script src="../static/js/main.js"></script>
+    <script src="../static/js/settings.js"></script>
+    <script src="../static/js/sidebar-resize.js"></script>
+    <script src="../static/js/statistics.js"></script>
+</body>
+</html> 
