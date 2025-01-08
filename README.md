@@ -22,13 +22,15 @@ from chatollamaagent.runner import NetworkRunner
 
 # Create and run the interface
 interface = Interface()
-interface.run()
+interface.run() # This will open the interface in your default browser
 
 # Or run a network file
 runner = NetworkRunner(
     "Path/To/Your/Network.coa")
-runner.run()
+runner.run() # This will execute the network
 ```
+
+The runner does NOT need the interface. They are fully separate systems. This allows you to design an Agent in the interface, but then deploy it anywhere you can run python code!
 
 ## Custom Nodes and Sockets
 
