@@ -25,7 +25,7 @@ interface.run() # This will open the interface in your default browser
 # Or run a network file
 runner = NetworkRunner(
     "Path/To/Your/Network.coa")
-runner.run() # This will execute the network
+runner.run() # This will execute the network (or provide a string input to specify which start node to run, default is "Main")
 ```
 
 The runner does NOT need the interface. They are fully separate systems. This allows you to design an Agent in the interface, but then deploy it anywhere you can run python code!
