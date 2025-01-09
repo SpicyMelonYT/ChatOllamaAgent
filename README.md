@@ -1,7 +1,5 @@
 # ChatOllamaAgent
 
-[![PyPI version](https://badge.fury.io/py/chatollamaagent.svg)](https://badge.fury.io/py/chatollamaagent)
-
 ```
 pip install chatollamaagent
 ```
