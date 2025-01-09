@@ -192,12 +192,16 @@ class NetworkRunner:
                 # Otherwise, follow the flow connection
                 current_node_id = self._get_next_node(current_node_id)
 
-    def run(self) -> None:
-        """Run the network starting from the Main start node."""
-        # Find the main start node
-        start_node_id = self._find_start_node()
+    def run(self, start_node_name: str = "Main") -> None:
+        """Run the network starting from a specified start node.
+        
+        Args:
+            start_node_name: Name of the start node to begin execution from. Defaults to "Main".
+        """
+        # Find the specified start node
+        start_node_id = self._find_start_node(start_node_name)
         if not start_node_id:
-            raise ValueError("No main start node found in the network")
+            raise ValueError(f"No start node with name '{start_node_name}' found in the network")
 
         # Start execution
         self.execute_flow(start_node_id)
