@@ -1,4 +1,4 @@
-from typing import Dict, List, Type, TypeVar, Optional, Set, Any
+from typing import Dict, List, Type, TypeVar, Optional, Set, Any, ForwardRef
 from dataclasses import dataclass, field
 import inspect
 
@@ -7,6 +7,9 @@ __all__ = ['node', 'socket', 'Node', 'DataSocket', 'NodeInstance', 'get_register
 # Type variables for type hinting
 T = TypeVar('T', bound='Node')
 S = TypeVar('S', bound='DataSocket')
+
+# Forward reference for NetworkRunner to avoid circular imports
+NetworkRunner = ForwardRef('NetworkRunner')
 
 # Registry to store node and socket classes
 _node_registry: Dict[str, Type['Node']] = {}
@@ -43,9 +46,10 @@ class NodeDefinition:
 
 class NodeInstance:
     """Represents an instance of a node in the network."""
-    def __init__(self, node_id: str, node_class: Type['Node']):
+    def __init__(self, node_id: str, node_class: Type['Node'], network_runner: 'NetworkRunner'):
         self.id = node_id
         self.node = node_class()
+        self.network_runner = network_runner
         self.socket_values: Dict[str, Dict[str, Any]] = {}  # Nested dict for socket values
         self.executed = False  # Flag to track if node has been executed
     

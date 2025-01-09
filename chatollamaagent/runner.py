@@ -65,7 +65,10 @@ class NetworkRunner:
                 raise ValueError(f"Unknown node type: {node_type}")
 
             node_instance = NodeInstance(
-                node_id, self.node_registry[node_type])
+                node_id, 
+                self.node_registry[node_type],
+                self
+            )
 
             # Store values for all sockets from the stored values map
             for socket_data in node_data.get('inputSockets', []):
